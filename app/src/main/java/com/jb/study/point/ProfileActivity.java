@@ -302,7 +302,7 @@ public class ProfileActivity extends AppCompatActivity {
     @SuppressLint("HardwareIds")
     private void saveInfo(String response) throws JSONException {
         JSONObject jsonObject = new JSONObject(response);
-        JSONObject jsonArray = jsonObject.getJSONObject("UpdateDetails");
+        JSONObject jsonArray = jsonObject.getJSONObject("userDetails");
         try {
             getSharedPreferences("USER_DETAILS", MODE_PRIVATE).edit()
                     .putString("name", jsonArray.getString("name"))

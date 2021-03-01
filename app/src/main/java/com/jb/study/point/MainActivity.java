@@ -44,8 +44,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private CardView premium_mock_test, premium_history, premium_practice_sets;
     private boolean getStatus = false;
     private ConstraintLayout premium_card, demo_card;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,28 +195,28 @@ public class MainActivity extends AppCompatActivity {
         thumbnail1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId1).putExtra("type", "search").putExtra("section","new"));
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId1).putExtra("type", "search").putExtra("section", "new"));
             }
         });
 
         thumbnail2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId2).putExtra("type", "search").putExtra("section","new"));
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId2).putExtra("type", "search").putExtra("section", "new"));
             }
         });
 
         thumbnail3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId3).putExtra("type", "search").putExtra("section","new"));
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId3).putExtra("type", "search").putExtra("section", "new"));
             }
         });
 
         showAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId1).putExtra("type", "search").putExtra("section","new"));
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("videoId", search_videoId1).putExtra("type", "search").putExtra("section", "new"));
             }
         });
 
@@ -280,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         exploreVideos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "search").putExtra("section","all"));
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "search").putExtra("section", "all"));
             }
         });
 
@@ -294,18 +300,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void shareIt() {
 
-        Intent intent =new Intent();
+        Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "JB STUDY POINT");
-        intent.putExtra(Intent.EXTRA_TEXT,"Find our official app on https://play.google.com/store/apps/details?id=com.jb.study.point ");
+        intent.putExtra(Intent.EXTRA_TEXT, "Find our official app on https://play.google.com/store/apps/details?id=com.jb.study.point ");
         intent.setType("text/plain");
         startActivity(intent);
 
     }
+
     private void logout() {
         session.setLogin(false);
-        getSharedPreferences("SHARED_PREFS",MODE_PRIVATE).edit().clear().apply();
-        getSharedPreferences("USER_DETAILS",MODE_PRIVATE).edit().clear().apply();
+        getSharedPreferences("SHARED_PREFS", MODE_PRIVATE).edit().clear().apply();
+        getSharedPreferences("USER_DETAILS", MODE_PRIVATE).edit().clear().apply();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         finish();
     }
@@ -366,10 +373,13 @@ public class MainActivity extends AppCompatActivity {
                     playlist_videoId2 = playlistModel.getItems().get(1).getId();
                     playlist_videoId3 = playlistModel.getItems().get(2).getId();
                     findViewById(R.id.course_content_card).setVisibility(View.VISIBLE);
-                    if (getStatus)
+                    if (getStatus) {
                         premium_card.setVisibility(View.VISIBLE);
-                    else
+                        demo_card.setVisibility(View.GONE);
+                    } else {
                         demo_card.setVisibility(View.VISIBLE);
+                        premium_card.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -411,6 +421,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void saveInfoAfterValidity(String response) throws JSONException {
+        JSONObject jsonObject = new JSONObject(response);
+        JSONObject jsonArray = jsonObject.getJSONObject("userDetails");
+        try {
+            getSharedPreferences("USER_DETAILS", MODE_PRIVATE).edit()
+                    .putString("name", jsonArray.getString("name"))
+                    .putString("email", jsonArray.getString("email"))
+                    .putString("gender", jsonArray.getString("gender"))
+                    .putString("subscription", jsonArray.getString("subscription"))
+                    .putString("validity", jsonArray.getString("validity"))
+                    .putString("photo", jsonArray.getString("photo"))
+                    .putString("dob", jsonArray.getString("dob"))
+                    .putString("device_token", jsonArray.getString("device_token"))
+                    .apply();
+            dialog.hide();
+            settingsValues();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void showReLoginDialog() {
         AlertDialog.Builder builder
                 = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
@@ -435,6 +468,30 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void showSessionExpiredDialog() {
+        AlertDialog.Builder builder
+                = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+        final View customLayout
+                = getLayoutInflater()
+                .inflate(
+                        R.layout.validity_expired,
+                        null);
+        builder.setCancelable(false);
+        Button buttonOk = customLayout.findViewById(R.id.session);
+        builder.setView(customLayout);
+        dialog = builder.create();
+
+        buttonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateSubscription();
+            }
+        });
+
+        dialog.show();
+    }
+
+    @SuppressLint("SimpleDateFormat")
     private void settingsValues() {
         //User user = SharedPrefManager.getInstance(this).getUser();
         SharedPreferences editor = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
@@ -452,7 +509,83 @@ public class MainActivity extends AppCompatActivity {
             subscription_status.setText(R.string.active);
             status_icon.setImageResource(R.drawable.ic_baseline_check_circle_24);
             getStatus = true;
+        } else {
+            subscription_status.setText(R.string.not_active);
+            status_icon.setImageResource(R.drawable.ic_baseline_cancel_24);
+            getStatus = false;
         }
+
+        if (premium_card.getVisibility() == View.VISIBLE || demo_card.getVisibility() == View.VISIBLE) {
+            if (getStatus) {
+                premium_card.setVisibility(View.VISIBLE);
+                demo_card.setVisibility(View.GONE);
+            } else {
+                demo_card.setVisibility(View.VISIBLE);
+                premium_card.setVisibility(View.GONE);
+            }
+        }
+
+        if (editor.getString("subscription", "inactive").equals("active") && editor.getString("validity", "NA").equals(new SimpleDateFormat("dd-MMM-yyyy").format(new Date()))) {
+            showSessionExpiredDialog();
+        }
+    }
+
+    private void updateSubscription() {
+        SharedPreferences editor = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserInterface.BASEURL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+
+        UserInterface api = retrofit.create(UserInterface.class);
+
+        MultipartBody.Part part = null;
+
+        //Create request body with text description and text media type
+        RequestBody nameUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("name", ""));
+        RequestBody subscriptionUpdate = RequestBody.create(MediaType.parse("text/plain"), "Expired");
+        RequestBody genderUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("gender", ""));
+        RequestBody dobUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("dob", ""));
+        RequestBody validityUpdate = RequestBody.create(MediaType.parse("text/plain"), "N/A");
+        RequestBody emailUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("email", ""));
+        //
+        Call<String> call = api.getUpdatedUser(part, nameUpdate, subscriptionUpdate, genderUpdate, dobUpdate, validityUpdate, emailUpdate);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        String jsonresponse = response.body();
+                        try {
+                            saveInfoAfterValidity(jsonresponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else {
+                        Log.i("onEmptyResponse", "Returned empty response");
+                        Toast.makeText(MainActivity.this, "Nothing returned", Toast.LENGTH_LONG).show();
+
+                    }
+                } else if (response.errorBody() != null) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.errorBody().string());
+                        Toast.makeText(MainActivity.this, jsonObject.getJSONObject("errors").getJSONArray("email").get(0).toString(), Toast.LENGTH_SHORT).show();
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(MainActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initViews() {
@@ -496,11 +629,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         settingsValues();
-        if(premium_card.getVisibility()==View.VISIBLE || demo_card.getVisibility()==View.VISIBLE){
-            if (getStatus)
+        if (premium_card.getVisibility() == View.VISIBLE || demo_card.getVisibility() == View.VISIBLE) {
+            if (getStatus) {
                 premium_card.setVisibility(View.VISIBLE);
-            else
+                demo_card.setVisibility(View.GONE);
+            } else {
                 demo_card.setVisibility(View.VISIBLE);
+                premium_card.setVisibility(View.GONE);
+            }
         }
     }
 }

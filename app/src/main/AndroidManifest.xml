@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".helper.AppController"
@@ -16,6 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JBStudyPoint">
+        <activity android:name=".payment.subscription.SubscriptionPagerActivity"
+            android:theme="@style/Theme.UserDialog"
+            android:excludeFromRecents="true"/>
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,17 +38,18 @@
             android:hardwareAccelerated="true"
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"
-            tools:targetApi="n" />
+            tools:targetApi="n"
+            android:excludeFromRecents="true"/>
         <activity android:name=".payment.SubscriptionActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".payment.PaymentActivity" />
+        <activity android:name=".payment.PaymentActivity">
+        </activity>
         <activity
             android:name=".authentication.RegisterActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".authentication.LoginActivity"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".NavBarActivity" />
         <activity
             android:name=".MainActivity"

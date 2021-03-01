@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.jb.study.point.ProfileActivity;
 import com.jb.study.point.R;
 import com.jb.study.point.authentication.UserInterface;
+import com.jb.study.point.payment.subscription.SubscriptionPagerActivity;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -307,8 +308,9 @@ public class PaymentActivity extends AppCompatActivity {
 
             case R.id.get_subscription: {
                 if (getSharedPreferences("USER_DETAILS",MODE_PRIVATE).getString("subscription","").equals("active")) {
-                    startActivity(new Intent(PaymentActivity.this, SubscriptionActivity.class));
-                    finish();
+                    /*startActivity(new Intent(PaymentActivity.this, SubscriptionActivity.class));
+                    finish();*/
+                    startActivity(new Intent(PaymentActivity.this, SubscriptionPagerActivity.class));
                 } else {
                     payUsingUpi("1", "8755475312@okbizaxis", "JB STUDY POINT", "JB Study Point Subscription");
                 }
