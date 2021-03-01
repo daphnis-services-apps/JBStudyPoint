@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/baskville_old_face</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:radius">30dp</item>
+    </style>
+
+    <style name="PaymentBackground">
+        <item name="android:fontFamily">@font/baskville_old_face</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:radius">30dp</item>
+        <item name="android:background">@drawable/payment_background</item>
+    </style>
+
+    <style name="PocketProgressBar" parent="SmoothProgressBar">
+        <item name="spb_stroke_separator_length">4dp</item>
+        <item name="spb_sections_count">4</item>
+        <item name="spb_speed">1</item>
+        <item name="android:interpolator">@anim/progressbar_interpolator</item>
+        <item name="spb_colors">@array/pocket_bar_colors</item>
+        <item name="spb_progressiveStart_activated">false</item>
+        <item name="spb_generate_background_with_colors">false</item>
+    </style>
+
+    <style name="RegisterDialog" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="DialogTitleText">Registering User</item>
+        <item name="DialogSpotColor">@color/purple_dark</item>
+        <item name="DialogSpotCount">8</item>
+    </style>
+
+    <style name="LoginDialog" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="DialogTitleText">Logging User</item>
+        <item name="DialogSpotColor">@color/purple_dark</item>
+        <item name="DialogSpotCount">8</item>
+    </style>
+
+    <style name="SaveDialog" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="DialogTitleText">Saving Details</item>
+        <item name="DialogSpotColor">@color/purple_dark</item>
+        <item name="DialogSpotCount">8</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/popup_background</item>
+    </style>
+</resources>

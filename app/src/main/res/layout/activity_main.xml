@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/main"
+            layout="@layout/main_header"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:targetApi="lollipop" />
+
+        <HorizontalScrollView
+            android:id="@+id/horizontal_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="140dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="90dp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/jb_card"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:elevation="8dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="15dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:targetApi="lollipop">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lucida_calligraphy_italic"
+                        android:text="JB"
+                        android:textColor="@color/purple_dark"
+                        android:textSize="18sp" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/net_card"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:elevation="8dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="15dp"
+                    app:layout_constraintStart_toEndOf="@id/jb_card"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:targetApi="lollipop">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lucida_calligraphy_italic"
+                        android:text="NET"
+                        android:textColor="@color/purple_dark"
+                        android:textSize="18sp" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/course_card"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:elevation="8dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="15dp"
+                    app:layout_constraintStart_toEndOf="@id/net_card"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:targetApi="lollipop">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/lucida_calligraphy_italic"
+                        android:text="COURSE"
+                        android:textColor="@color/purple_dark"
+                        android:textSize="12sp" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/visitChannel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Explore more?\nVisit Our Channel"
+                    android:layout_marginTop="17dp"
+                    android:fontFamily="@font/lucida_calligraphy_italic"
+                    android:gravity="center"
+                    android:layout_marginEnd="20dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/purple_dark"/>
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <include android:id="@+id/newest_card"
+            layout="@layout/newest_section"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/horizontal_card"/>
+
+        <include android:id="@+id/course_content_card"
+            layout="@layout/course_section"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="30dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/newest_card"/>
+
+        <include android:id="@+id/demo_videos_card"
+            layout="@layout/hot_topics_section"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="30dp"
+            android:visibility="gone"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintTop_toBottomOf="@+id/course_content_card"/>
+
+        <include android:id="@+id/premium_videos_card"
+            layout="@layout/subscription_section"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="30dp"
+            android:visibility="gone"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintTop_toBottomOf="@+id/course_content_card"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

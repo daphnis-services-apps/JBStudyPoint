@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">JB Study Point</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Himanshu Sharma</string>
+    <string name="nav_header_subtitle">Subscription Status: Active</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="login">LOGIN</string>
+    <string name="enter_email">Email Address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="terms_amp_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="by_signing_in_you_are_agree_with_our">By signing in, you are agree with our </string>
+    <string name="sign_in_now">Sign in now</string>
+    <string name="already_have_an_account">Already have an Account?</string>
+    <string name="heading">Welcome to all new Studying Experience</string>
+    <string name="or_login_with">or Login with</string>
+    <string name="profile">Profile</string>
+    <string name="payment">Payment</string>
+    <string name="subscription">Subscription</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="tell_a_friend">Tell a Friend</string>
+    <string name="help_amp_feedback"><![CDATA[Help & Feedback]]></string>
+    <string name="himanshu_sharma">Himanshu Sharma</string>
+    <string name="active">Active</string>
+    <string name="view_subscription">View Subscription</string>
+    <string name="enter_name">Enter Name</string>
+</resources>
