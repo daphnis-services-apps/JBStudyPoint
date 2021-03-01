@@ -47,6 +47,16 @@
             android:layout_marginBottom="20dp"
             android:textSize="12sp"
             android:background="@drawable/edit_text_shape"/>
+
+        <ProgressBar
+            android:id="@+id/progressBarSession"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

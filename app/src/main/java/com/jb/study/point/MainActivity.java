@@ -478,12 +478,16 @@ public class MainActivity extends AppCompatActivity {
                         null);
         builder.setCancelable(false);
         Button buttonOk = customLayout.findViewById(R.id.session);
+        ProgressBar progressBar = customLayout.findViewById(R.id.progressBarSession);
         builder.setView(customLayout);
         dialog = builder.create();
 
         buttonOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonOk.setVisibility(View.GONE);
+                progressBar.setIndeterminate(true);
+                progressBar.setVisibility(View.VISIBLE);
                 updateSubscription();
             }
         });
