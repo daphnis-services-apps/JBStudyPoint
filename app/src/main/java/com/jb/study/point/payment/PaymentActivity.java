@@ -21,7 +21,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.jb.study.point.ProfileActivity;
 import com.jb.study.point.R;
 import com.jb.study.point.authentication.UserInterface;
 import com.jb.study.point.payment.subscription.SubscriptionPagerActivity;
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -49,7 +47,7 @@ public class PaymentActivity extends AppCompatActivity {
     final int UPI_PAYMENT = 0;
 
     private Button get_subscription, send_receipt;
-    private ImageView back,  status_icon;
+    private ImageView back, status_icon;
     private CircleImageView user_profile;
     private TextView user_name, subscription_status;
     private AlertDialog progressDialog;
@@ -84,14 +82,14 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void settingsValues() {
-        SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS",MODE_PRIVATE);
-        user_name.setText(sharedPreferences.getString("name",""));
+        SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
+        user_name.setText(sharedPreferences.getString("name", ""));
         Glide.with(this)
-                .load(sharedPreferences.getString("photo",""))
+                .load(sharedPreferences.getString("photo", ""))
                 .centerCrop()
                 .placeholder(R.drawable.circle_cropped)
                 .into(user_profile);
-        if (sharedPreferences.getString("subscription","").equals("active")) {
+        if (sharedPreferences.getString("subscription", "").equals("active")) {
             subscription_status.setText(R.string.active);
             status_icon.setImageResource(R.drawable.ic_baseline_check_circle_24);
             get_subscription.setText(R.string.view_subscription);
@@ -307,7 +305,7 @@ public class PaymentActivity extends AppCompatActivity {
                 break;
 
             case R.id.get_subscription: {
-                if (getSharedPreferences("USER_DETAILS",MODE_PRIVATE).getString("subscription","").equals("active")) {
+                if (getSharedPreferences("USER_DETAILS", MODE_PRIVATE).getString("subscription", "").equals("active")) {
                     /*startActivity(new Intent(PaymentActivity.this, SubscriptionActivity.class));
                     finish();*/
                     startActivity(new Intent(PaymentActivity.this, SubscriptionPagerActivity.class));
@@ -318,9 +316,7 @@ public class PaymentActivity extends AppCompatActivity {
             break;
 
             case R.id.send_receipt: {
-                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                startActivity(intent);
+                sendReceipt();
             }
             break;
 
@@ -328,6 +324,19 @@ public class PaymentActivity extends AppCompatActivity {
                 Toast.makeText(this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    private void sendReceipt() {
+        String subject = "Subscription Payment Receipt";
+        String message = "Hello, Sir. My name is " + getSharedPreferences("USER_DETAILS",MODE_PRIVATE).getString("name","") + ". I purchase the premium membership and here is the payment receipt. Please check the Attachments in this email";
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        String[] strTo = {"jbstudypoint2020@gamil.com"};
+        intent.putExtra(Intent.EXTRA_EMAIL, strTo);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, message);
+        intent.setType("text/email");
+        intent.setPackage("com.google.android.gm");
+        startActivity(intent);
     }
 
     private void showDialog() {

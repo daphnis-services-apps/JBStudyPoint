@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean getStatus = false;
     private ConstraintLayout premium_card, demo_card;
     private AlertDialog dialog;
+    private TextView feedback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,6 +297,26 @@ public class MainActivity extends AppCompatActivity {
                 shareIt();
             }
         });
+
+        feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendFeedback();
+            }
+        });
+    }
+
+    private void sendFeedback() {
+        String subject = "Feedback on ";
+        String message = "Hello, Sir. My name is " + name.getText().toString() + ". I have some feedback regarding ";
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        String[] strTo = {"jbstudypoint2020@gamil.com"};
+        intent.putExtra(Intent.EXTRA_EMAIL, strTo);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, message);
+        intent.setType("text/email");
+        intent.setPackage("com.google.android.gm");
+        startActivity(intent);
     }
 
     private void shareIt() {
@@ -627,6 +648,7 @@ public class MainActivity extends AppCompatActivity {
         subscription_status = navigationView.getHeaderView(0).findViewById(R.id.subscription_status);
         status_icon = navigationView.getHeaderView(0).findViewById(R.id.status_icon);
         share = navigationView.getHeaderView(0).findViewById(R.id.share);
+        feedback = navigationView.getHeaderView(0).findViewById(R.id.feedback);
     }
 
     @Override

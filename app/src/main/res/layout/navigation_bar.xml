@@ -240,6 +240,7 @@
                     android:src="@drawable/ic_baseline_help_24" />
 
                 <TextView
+                    android:id="@+id/feedback"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
