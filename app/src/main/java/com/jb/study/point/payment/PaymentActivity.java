@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -356,7 +357,14 @@ public class PaymentActivity extends AppCompatActivity {
 
         RelativeLayout days30 = dialog.findViewById(R.id.days30);
         RelativeLayout days90 = dialog.findViewById(R.id.days90);
+        RelativeLayout days90Renew = dialog.findViewById(R.id.days90Renew);
+        LinearLayout paymentLayout = dialog.findViewById(R.id.payment_layout);
         ImageView getSubscription = dialog.findViewById(R.id.get_subscription);
+
+        if(getSharedPreferences("USER_DETAILS",MODE_PRIVATE).getString("payment_history","").equals("yes_1500")){
+            paymentLayout.setVisibility(View.GONE);
+            days90Renew.setVisibility(View.VISIBLE);
+        }
 
         days30.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
@@ -378,13 +386,22 @@ public class PaymentActivity extends AppCompatActivity {
             }
         });
 
+        days90Renew.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            @Override
+            public void onClick(View v) {
+                days90Renew.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
+                setAmount = "1500";
+            }
+        });
+
         getSubscription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (setAmount.equals("0"))
                     Toast.makeText(PaymentActivity.this, "Please choose one of the Package", Toast.LENGTH_SHORT).show();
                 else
-                    payUsingUpi(setAmount, "9899057044-2@okbizaxis", "JB STUDY POINT", "JB Study Point Subscription");
+                    payUsingUpi(setAmount, "8755475312@okbizaxis", "JB STUDY POINT", "JB Study Point Subscription");
             }
         });
     }
