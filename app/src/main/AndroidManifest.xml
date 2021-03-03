@@ -16,9 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JBStudyPoint">
-        <activity android:name=".payment.subscription.SubscriptionPagerActivity"
-            android:theme="@style/Theme.UserDialog"
-            android:excludeFromRecents="true"/>
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

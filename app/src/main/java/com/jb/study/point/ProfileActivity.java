@@ -230,8 +230,6 @@ public class ProfileActivity extends AppCompatActivity {
         String gender = this.gender.getCheckedRadioButtonId() == R.id.male ? "Male" : "Female";
 
         SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
-        String subscription = sharedPreferences.getString("subscription", "");
-        String validity = sharedPreferences.getString("validity", "");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UserInterface.BASEURL)
@@ -251,13 +249,11 @@ public class ProfileActivity extends AppCompatActivity {
         }
         //Create request body with text description and text media type
         RequestBody nameUpdate = RequestBody.create(MediaType.parse("text/plain"), name);
-        RequestBody subscriptionUpdate = RequestBody.create(MediaType.parse("text/plain"), subscription);
         RequestBody genderUpdate = RequestBody.create(MediaType.parse("text/plain"), gender);
         RequestBody dobUpdate = RequestBody.create(MediaType.parse("text/plain"), dob);
-        RequestBody validityUpdate = RequestBody.create(MediaType.parse("text/plain"), validity);
         RequestBody emailUpdate = RequestBody.create(MediaType.parse("text/plain"), email);
         //
-        Call<String> call = api.getUpdatedUser(part, nameUpdate, subscriptionUpdate, genderUpdate, dobUpdate, validityUpdate, emailUpdate);
+        Call<String> call = api.getUpdatedUser(part, nameUpdate, genderUpdate, dobUpdate, emailUpdate);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {

@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getWindow().setStatusBarColor(ContextCompat.getColor(LoginActivity.this,R.color.purple_dark));// set status background white
+            getWindow().setStatusBarColor(ContextCompat.getColor(LoginActivity.this,R.color.purple));// set status background white
         }
 
         //initialize Views

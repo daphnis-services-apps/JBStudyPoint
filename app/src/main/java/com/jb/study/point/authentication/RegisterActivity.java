@@ -48,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getWindow().setStatusBarColor(ContextCompat.getColor(RegisterActivity.this, R.color.purple_dark));// set status background purple
+            getWindow().setStatusBarColor(ContextCompat.getColor(RegisterActivity.this, R.color.purple));// set status background purple
         }
         initViews();
 

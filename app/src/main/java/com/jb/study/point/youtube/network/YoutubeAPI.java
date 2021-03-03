@@ -20,7 +20,7 @@ public class YoutubeAPI {
 
     public static final String API = "&key=";
 
-    public static final String API_KEY = "AIzaSyAi_LI1VkH4NuzfBdewHumERkcavh4i_ho";
+    public static final String API_KEY = "AIzaSyD1QtPK_VIZLH-NGic60OiQh47x-dcySk0";
 
     public static final String PLAYLIST_ITEMS = "playlistItems?";
 

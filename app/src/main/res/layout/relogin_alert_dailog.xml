@@ -23,7 +23,7 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:paddingStart="30dp"
-            android:background="@color/purple_dark" />
+            android:background="@color/purple" />
 
         <TextView
             android:layout_width="match_parent"

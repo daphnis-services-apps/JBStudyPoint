@@ -23,13 +23,13 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:paddingStart="30dp"
-            android:background="@color/purple_dark" />
+            android:background="@color/purple" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Your Premium Account Validity has been expired.\nPlease renew your Premium Subscription to access all premium contents."
+            android:text="Your Premium Account Validity has been expired. Please renew your Premium Subscription to access all premium contents."
             android:textColor="@color/black"
             android:paddingHorizontal="10dp"
             android:textSize="15sp"

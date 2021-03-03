@@ -2,10 +2,12 @@ package com.jb.study.point.payment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -15,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,14 +26,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.jb.study.point.R;
 import com.jb.study.point.authentication.UserInterface;
-import com.jb.study.point.payment.subscription.SubscriptionPagerActivity;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
@@ -51,6 +55,8 @@ public class PaymentActivity extends AppCompatActivity {
     private CircleImageView user_profile;
     private TextView user_name, subscription_status;
     private AlertDialog progressDialog;
+    private String setAmount = "0";
+    private Dialog dialog;
 
     public static boolean isConnectionAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -98,16 +104,20 @@ public class PaymentActivity extends AppCompatActivity {
         hideDialog();
     }
 
-    private void updateSubscription() {
+    private void updateSubscription(String status, String txnId) {
         showDialog();
 
         SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
         String email = sharedPreferences.getString("email", "");
-        String name = sharedPreferences.getString("name", "");
-        String dob = sharedPreferences.getString("dob", "");
-        String gender = sharedPreferences.getString("gender", "");
-        String subscription = "active";
-        String validity = "31-May-2021";
+        String subscription;
+        String validity;
+        if(status.equals("success")) {
+            subscription = "active";
+            validity = "31-May-2021";
+        } else {
+            subscription = "pending from Bank status";
+            validity = "N/A";
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(UserInterface.BASEURL)
@@ -119,14 +129,19 @@ public class PaymentActivity extends AppCompatActivity {
         MultipartBody.Part part = null;
 
         //Create request body with text description and text media type
-        RequestBody nameUpdate = RequestBody.create(MediaType.parse("text/plain"), name);
+        RequestBody paymentStatus = RequestBody.create(MediaType.parse("text/plain"), status);
         RequestBody subscriptionUpdate = RequestBody.create(MediaType.parse("text/plain"), subscription);
-        RequestBody genderUpdate = RequestBody.create(MediaType.parse("text/plain"), gender);
-        RequestBody dobUpdate = RequestBody.create(MediaType.parse("text/plain"), dob);
-        RequestBody validityUpdate = RequestBody.create(MediaType.parse("text/plain"), validity);
+        RequestBody approvalNo = RequestBody.create(MediaType.parse("text/plain"), txnId);
+        @SuppressLint("SimpleDateFormat") RequestBody paymentDate = RequestBody.create(MediaType.parse("text/plain"), new SimpleDateFormat("dd-MMM-yyyy").format(new Date()));
+        Date date = new Date();
+        if (setAmount.equals("1500"))
+            date.setMonth(date.getMonth() % 12 + 1);
+        @SuppressLint("SimpleDateFormat") RequestBody validityUpdate = RequestBody.create(MediaType.parse("text/plain"), setAmount.equals("1500") && status.equals("success") ? new SimpleDateFormat("dd-MMM-yyyy").format(date) : validity);
         RequestBody emailUpdate = RequestBody.create(MediaType.parse("text/plain"), email);
+        RequestBody paymentHistory = RequestBody.create(MediaType.parse("text/plain"), "yes:"+setAmount);
+        RequestBody paymentAmount = RequestBody.create(MediaType.parse("text/plain"), setAmount);
         //
-        Call<String> call = api.getUpdatedUser(part, nameUpdate, subscriptionUpdate, genderUpdate, dobUpdate, validityUpdate, emailUpdate);
+        Call<String> call = api.getSubscriptionUpdatedUser(part, paymentStatus, subscriptionUpdate, approvalNo, paymentDate, validityUpdate, emailUpdate, paymentHistory, paymentAmount);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
@@ -149,7 +164,7 @@ public class PaymentActivity extends AppCompatActivity {
                 } else if (response.errorBody() != null) {
                     try {
                         JSONObject jsonObject = new JSONObject(response.errorBody().string());
-                        Toast.makeText(PaymentActivity.this, jsonObject.getJSONObject("errors").getJSONArray("email").get(0).toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PaymentActivity.this, jsonObject.toString(), Toast.LENGTH_LONG).show();
                         hideDialog();
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
@@ -170,7 +185,7 @@ public class PaymentActivity extends AppCompatActivity {
     @SuppressLint("HardwareIds")
     private void saveInfo(String response) throws JSONException {
         JSONObject jsonObject = new JSONObject(response);
-        JSONObject jsonArray = jsonObject.getJSONObject("UpdateDetails");
+        JSONObject jsonArray = jsonObject.getJSONObject("userDetails");
         try {
             getSharedPreferences("USER_DETAILS", MODE_PRIVATE).edit()
                     .putString("name", jsonArray.getString("name"))
@@ -203,6 +218,8 @@ public class PaymentActivity extends AppCompatActivity {
 
         progressDialog = new SpotsDialog(this, R.style.SaveDialog);
         progressDialog.setCancelable(false);
+
+        dialog = new Dialog(this);
     }
 
     void payUsingUpi(String amount, String upiId, String name, String note) {
@@ -240,10 +257,10 @@ public class PaymentActivity extends AppCompatActivity {
         if (requestCode == UPI_PAYMENT) {
             if ((RESULT_OK == resultCode) || (resultCode == 11)) {
                 if (data != null) {
-                    String trxt = data.getStringExtra("response");
-                    Log.d("UPI", "onActivityResult: " + trxt);
+                    String text = data.getStringExtra("response");
+                    Log.d("UPI", "onActivityResult: " + text);
                     ArrayList<String> dataList = new ArrayList<>();
-                    dataList.add(trxt);
+                    dataList.add(text);
                     upiPaymentDataOperation(dataList);
                 } else {
                     Log.d("UPI", "onActivityResult: " + "Return data is null");
@@ -268,6 +285,7 @@ public class PaymentActivity extends AppCompatActivity {
             if (str == null) str = "discard";
             String status = "";
             String approvalRefNo = "";
+            String txnId = "";
             String[] response = str.split("&");
             for (String s : response) {
                 String[] equalStr = s.split("=");
@@ -276,6 +294,8 @@ public class PaymentActivity extends AppCompatActivity {
                         status = equalStr[1].toLowerCase();
                     } else if (equalStr[0].toLowerCase().equals("ApprovalRefNo".toLowerCase()) || equalStr[0].toLowerCase().equals("txnRef".toLowerCase())) {
                         approvalRefNo = equalStr[1];
+                    } else if(equalStr[0].toLowerCase().equals("txnId".toLowerCase())) {
+                        txnId = equalStr[1];
                     }
                 } else {
                     paymentCancel = "Payment cancelled by user.";
@@ -286,9 +306,12 @@ public class PaymentActivity extends AppCompatActivity {
                 //Code to handle successful transaction here.
                 Toast.makeText(PaymentActivity.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
                 Log.d("UPI", "responseStr: " + approvalRefNo);
-                updateSubscription();
+                updateSubscription(status, txnId);
             } else if ("Payment cancelled by user.".equals(paymentCancel)) {
                 Toast.makeText(PaymentActivity.this, "Payment cancelled by user.", Toast.LENGTH_SHORT).show();
+            } else if (status.equals("pending")){
+                Toast.makeText(PaymentActivity.this, "Transaction Pending. Please wait 48 hours for Payment update. If payment not updated kindly contact us.", Toast.LENGTH_LONG).show();
+                updateSubscription(status, txnId);
             } else {
                 Toast.makeText(PaymentActivity.this, "Transaction failed.Please try again", Toast.LENGTH_SHORT).show();
             }
@@ -306,11 +329,10 @@ public class PaymentActivity extends AppCompatActivity {
 
             case R.id.get_subscription: {
                 if (getSharedPreferences("USER_DETAILS", MODE_PRIVATE).getString("subscription", "").equals("active")) {
-                    /*startActivity(new Intent(PaymentActivity.this, SubscriptionActivity.class));
-                    finish();*/
-                    startActivity(new Intent(PaymentActivity.this, SubscriptionPagerActivity.class));
+                    startActivity(new Intent(PaymentActivity.this, SubscriptionActivity.class));
+                    finish();
                 } else {
-                    payUsingUpi("1", "8755475312@okbizaxis", "JB STUDY POINT", "JB Study Point Subscription");
+                    getSubscription();
                 }
             }
             break;
@@ -326,9 +348,50 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
+    private void getSubscription() {
+        dialog.setContentView(R.layout.activity_subscription_pager);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(true);
+        dialog.show();
+
+        RelativeLayout days30 = dialog.findViewById(R.id.days30);
+        RelativeLayout days90 = dialog.findViewById(R.id.days90);
+        ImageView getSubscription = dialog.findViewById(R.id.get_subscription);
+
+        days30.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            @Override
+            public void onClick(View v) {
+                days30.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
+                days90.setBackground(getResources().getDrawable(R.drawable.button_white));
+                setAmount = "1500";
+            }
+        });
+
+        days90.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            @Override
+            public void onClick(View v) {
+                days90.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
+                days30.setBackground(getResources().getDrawable(R.drawable.button_white));
+                setAmount = "3000";
+            }
+        });
+
+        getSubscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (setAmount.equals("0"))
+                    Toast.makeText(PaymentActivity.this, "Please choose one of the Package", Toast.LENGTH_SHORT).show();
+                else
+                    payUsingUpi(setAmount, "9899057044-2@okbizaxis", "JB STUDY POINT", "JB Study Point Subscription");
+            }
+        });
+    }
+
     private void sendReceipt() {
         String subject = "Subscription Payment Receipt";
-        String message = "Hello, Sir. My name is " + getSharedPreferences("USER_DETAILS",MODE_PRIVATE).getString("name","") + ". I purchase the premium membership and here is the payment receipt. Please check the Attachments in this email";
+        String message = "Hello, Sir. My name is " + getSharedPreferences("USER_DETAILS", MODE_PRIVATE).getString("name", "") + ". I purchase the premium membership and here is the payment receipt. Please check the Attachments in this email";
         Intent intent = new Intent(Intent.ACTION_SEND);
         String[] strTo = {"jbstudypoint2020@gamil.com"};
         intent.putExtra(Intent.EXTRA_EMAIL, strTo);
@@ -340,11 +403,17 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void showDialog() {
+        if(!dialog.isShowing())
+            dialog.show();
+
         if (!progressDialog.isShowing())
             progressDialog.show();
     }
 
     private void hideDialog() {
+        if(dialog.isShowing())
+            dialog.hide();
+
         if (progressDialog.isShowing())
             progressDialog.dismiss();
     }

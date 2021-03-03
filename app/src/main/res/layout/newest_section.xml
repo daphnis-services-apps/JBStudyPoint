@@ -27,7 +27,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/lucida_calligraphy_italic"
             android:text="Newest"
-            android:textColor="@color/purple_dark"
+            android:textColor="@color/pink"
             android:textSize="18sp" />
     </androidx.cardview.widget.CardView>
 

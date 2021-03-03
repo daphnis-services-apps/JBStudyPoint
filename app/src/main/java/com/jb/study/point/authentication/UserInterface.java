@@ -47,9 +47,21 @@ public interface UserInterface {
     Call<String> getUpdatedUser(
            @Part MultipartBody.Part part,
            @Part("name") RequestBody name,
-           @Part("subscription") RequestBody subscription,
            @Part("gender") RequestBody gender,
            @Part("dob") RequestBody dob,
-           @Part("validity") RequestBody validity,
            @Part("email") RequestBody email);
+
+    @Headers("Accept: application/json")
+    @POST("updateUser")
+    @Multipart
+    Call<String> getSubscriptionUpdatedUser(
+            @Part MultipartBody.Part part,
+            @Part("payment_status") RequestBody paymentStatus,
+            @Part("subscription") RequestBody subscriptionUpdate,
+            @Part("payment_id") RequestBody approvalNo,
+            @Part("payment_date") RequestBody paymentDate,
+            @Part("validity") RequestBody validityUpdate,
+            @Part("email") RequestBody emailUpdate,
+            @Part("payment_history") RequestBody paymentHistory,
+            @Part("payment_amount") RequestBody paymentAmount);
 }

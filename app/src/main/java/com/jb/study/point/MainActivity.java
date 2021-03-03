@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
     private CardView practice_beo, practice_history, practice_tgt;
     private CardView premium_mock_test, premium_history, premium_practice_sets;
+    private CardView tgt_playlist, history_playlist, net_playlist;
     private boolean getStatus = false;
     private ConstraintLayout premium_card, demo_card;
     private AlertDialog dialog;
@@ -270,6 +271,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        tgt_playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "playlist").putExtra("playlist", "PLNosGDY8Dh1TGKCsvsQ74GnEX44MkxQed"));
+            }
+        });
+
+        history_playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "playlist").putExtra("playlist", "PLNosGDY8Dh1SbSE-1E77dwTnoCssrD6hU"));
+            }
+        });
+
+        net_playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "playlist").putExtra("playlist", "PLNosGDY8Dh1SWbnEf4qNW12ksBmO4ugxV"));
+            }
+        });
+
         premiumShowAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -431,6 +453,11 @@ public class MainActivity extends AppCompatActivity {
                         .putString("photo", user.getString("photo"))
                         .putString("dob", user.getString("dob"))
                         .putString("device_token", user.getString("device_token"))
+                        .putString("payment_date", user.getString("payment_date"))
+                        .putString("payment_id", user.getString("payment_id"))
+                        .putString("payment_status", user.getString("payment_status"))
+                        .putString("payment_history", user.getString("payment_history"))
+                        .putString("payment_amount", user.getString("payment_amount"))
                         .apply();
                 settingsValues();
             } catch (JSONException e) {
@@ -567,14 +594,17 @@ public class MainActivity extends AppCompatActivity {
         MultipartBody.Part part = null;
 
         //Create request body with text description and text media type
-        RequestBody nameUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("name", ""));
         RequestBody subscriptionUpdate = RequestBody.create(MediaType.parse("text/plain"), "Expired");
-        RequestBody genderUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("gender", ""));
-        RequestBody dobUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("dob", ""));
         RequestBody validityUpdate = RequestBody.create(MediaType.parse("text/plain"), "N/A");
-        RequestBody emailUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("email", ""));
+
+        RequestBody paymentStatus = RequestBody.create(MediaType.parse("text/plain"), editor.getString("payment_status", ""));
+        RequestBody approvalNo = RequestBody.create(MediaType.parse("text/plain"), editor.getString("payment_id", ""));
+        RequestBody paymentDate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("payment_date", ""));
+        RequestBody emailUpdate = RequestBody.create(MediaType.parse("text/plain"), editor.getString("email",""));
+        RequestBody paymentHistory = RequestBody.create(MediaType.parse("text/plain"), editor.getString("payment_history", ""));
+        RequestBody paymentAmount = RequestBody.create(MediaType.parse("text/plain"), editor.getString("payment_amount", ""));
         //
-        Call<String> call = api.getUpdatedUser(part, nameUpdate, subscriptionUpdate, genderUpdate, dobUpdate, validityUpdate, emailUpdate);
+        Call<String> call = api.getSubscriptionUpdatedUser(part, paymentStatus, subscriptionUpdate, approvalNo, paymentDate, validityUpdate, emailUpdate, paymentHistory, paymentAmount);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
@@ -636,6 +666,9 @@ public class MainActivity extends AppCompatActivity {
         exploreVideos = findViewById(R.id.exploreVideos);
         premium_card = findViewById(R.id.premium_videos_card);
         demo_card = findViewById(R.id.demo_videos_card);
+        tgt_playlist  =findViewById(R.id.tgt_playlist);
+        history_playlist  =findViewById(R.id.history_playlist);
+        net_playlist  =findViewById(R.id.net_playlist);
         // reLogin = findViewById(R.id.reLogin);
 
         back_nav = navigationView.getHeaderView(0).findViewById(R.id.back_nav_button);

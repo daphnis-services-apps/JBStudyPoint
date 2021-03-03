@@ -27,7 +27,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/lucida_calligraphy_italic"
             android:text="Demo Classes Videos"
-            android:textColor="@color/purple_dark"
+            android:textColor="@color/pink"
             android:paddingHorizontal="10dp"
             android:textSize="15sp" />
 
@@ -66,7 +66,7 @@
                     android:fontFamily="@font/lucida_calligraphy_italic"
                     android:text="B.E.O"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/purple_dark"
+                    android:textColor="@color/purple"
                     android:textSize="12sp" />
             </androidx.cardview.widget.CardView>
 
@@ -80,7 +80,7 @@
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="5dp"
                 app:cardElevation="15dp"
-                app:layout_constraintStart_toEndOf="@id/jb_card"
+                app:layout_constraintStart_toEndOf="@id/tgt_playlist_card"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:targetApi="lollipop">
 
@@ -105,7 +105,7 @@
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="5dp"
                 app:cardElevation="15dp"
-                app:layout_constraintStart_toEndOf="@id/net_card"
+                app:layout_constraintStart_toEndOf="@id/history_playlist_card"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:targetApi="lollipop">
 
@@ -115,7 +115,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/lucida_calligraphy_italic"
                     android:text="TGT\nPGT"
-                    android:textColor="@color/purple_dark"
+                    android:textColor="@color/pink"
                     android:gravity="center"
                     android:textSize="12sp" />
             </androidx.cardview.widget.CardView>
