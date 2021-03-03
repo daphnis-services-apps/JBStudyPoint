@@ -10,8 +10,8 @@ android {
         applicationId "com.jb.study.point"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "1.000.02"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

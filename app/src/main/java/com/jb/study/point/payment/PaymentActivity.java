@@ -139,7 +139,7 @@ public class PaymentActivity extends AppCompatActivity {
             date.setMonth(date.getMonth() % 12 + 1);
         @SuppressLint("SimpleDateFormat") RequestBody validityUpdate = RequestBody.create(MediaType.parse("text/plain"), setAmount.equals("1500") && status.equals("success") ? new SimpleDateFormat("dd-MMM-yyyy").format(date) : validity);
         RequestBody emailUpdate = RequestBody.create(MediaType.parse("text/plain"), email);
-        RequestBody paymentHistory = RequestBody.create(MediaType.parse("text/plain"), "yes:"+setAmount);
+        RequestBody paymentHistory = RequestBody.create(MediaType.parse("text/plain"), "yes_"+setAmount);
         RequestBody paymentAmount = RequestBody.create(MediaType.parse("text/plain"), setAmount);
         //
         Call<String> call = api.getSubscriptionUpdatedUser(part, paymentStatus, subscriptionUpdate, approvalNo, paymentDate, validityUpdate, emailUpdate, paymentHistory, paymentAmount);
