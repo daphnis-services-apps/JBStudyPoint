@@ -4,16 +4,19 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -32,6 +35,7 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.jb.study.point.authentication.UserInterface;
+import com.jb.study.point.payment.PaymentActivity;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -64,10 +68,12 @@ public class ProfileActivity extends AppCompatActivity {
     private Button save_details;
     private TextView name, email, dob;
     private EditText edit_name, edit_gender, edit_dob;
+    private EditText old_password, new_password, new_password_confirm;
     private String filepath;
     private AlertDialog progressDialog;
     private Calendar myCalendar;
     private DatePickerDialog.OnDateSetListener date;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +185,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         myCalendar = Calendar.getInstance();
 
+        dialog = new Dialog(this);
+
     }
 
     public void onClick(View view) {
@@ -213,12 +221,142 @@ public class ProfileActivity extends AppCompatActivity {
                 break;
 
             case R.id.change_password_button:
+                dialog.setContentView(R.layout.change_password_layout);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.setCancelable(true);
+                dialog.show();
+
+                old_password = dialog.findViewById(R.id.old_password);
+                new_password = dialog.findViewById(R.id.new_password);
+                new_password_confirm = dialog.findViewById(R.id.new_password_confirm);
+                Button save_button = dialog.findViewById(R.id.save_password_button);
+
+                save_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        String old_password_string = old_password.getText().toString();
+                        String new_password_string = new_password.getText().toString();
+                        String new_password_confirm_string = new_password_confirm.getText().toString();
+
+                        if (editTextValidation(old_password_string,new_password_string,new_password_confirm_string) && passwordValidate(new_password_string,new_password_confirm_string)){
+                            changePassword(old_password_string,new_password_string);
+                        }
+                    }
+                });
                 break;
 
             default:
                 Toast.makeText(this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    private void changePassword(String old_password_string, String new_password_string) {
+        showDialog();
+        SharedPreferences sharedPreferences = getSharedPreferences("USER_DETAILS", MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", "");
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UserInterface.BASEURL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+
+        UserInterface api = retrofit.create(UserInterface.class);
+
+        RequestBody emailId = RequestBody.create(MediaType.parse("text/plain"), email);
+        RequestBody oldPassword = RequestBody.create(MediaType.parse("text/plain"), old_password_string);
+        RequestBody newPassword = RequestBody.create(MediaType.parse("text/plain"), new_password_string);
+
+        Call<String> call = api.getUserPasswordUpdate(emailId,oldPassword,newPassword);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        String jsonresponse = response.body();
+                        try {
+                            JSONObject jsonObject = new JSONObject(jsonresponse);
+                            Toast.makeText(ProfileActivity.this, jsonObject.get("message").toString(), Toast.LENGTH_SHORT).show();
+                            hideDialog();
+                            dialog.hide();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            hideDialog();
+                        }
+
+                    } else {
+                        Log.i("onEmptyResponse", "Returned empty response");
+                        Toast.makeText(ProfileActivity.this, "Nothing returned", Toast.LENGTH_LONG).show();
+                        hideDialog();
+                    }
+                } else if (response.errorBody() != null) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.errorBody().string());
+                        Toast.makeText(ProfileActivity.this, jsonObject.toString(), Toast.LENGTH_LONG).show();
+                        hideDialog();
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(ProfileActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        hideDialog();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                Toast.makeText(ProfileActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                hideDialog();
+            }
+        });
+    }
+
+    private boolean editTextValidation(String user_email, String user_password, String user_confirm_password) {
+        if (TextUtils.isEmpty(user_email) && TextUtils.isEmpty(user_password) && TextUtils.isEmpty(user_confirm_password)) {
+            old_password.setError("Please Enter Old Password");
+            old_password.requestFocus();
+            new_password.setError("Please Enter Password");
+            new_password.requestFocus();
+            new_password_confirm.setError("Please Confirm Password");
+            new_password_confirm.requestFocus();
+        } else if (TextUtils.isEmpty(user_password) && TextUtils.isEmpty(user_confirm_password)) {
+            new_password.setError("Please Enter Password");
+            new_password.requestFocus();
+            new_password_confirm.setError("Please Confirm Password");
+            new_password_confirm.requestFocus();
+        } else if (TextUtils.isEmpty(user_email) && TextUtils.isEmpty(user_confirm_password)) {
+            old_password.setError("Please Enter Old Password");
+            old_password.requestFocus();
+            new_password_confirm.setError("Please Confirm Password");
+            new_password_confirm.requestFocus();
+        } else if (TextUtils.isEmpty(user_email) && TextUtils.isEmpty(user_password)) {
+            old_password.setError("Please Enter Old Password");
+            old_password.requestFocus();
+            new_password.setError("Please Enter Password");
+            new_password.requestFocus();
+        } else if (TextUtils.isEmpty(user_email)) {
+            old_password.setError("Please Enter Old Password");
+            old_password.requestFocus();
+        } else if (TextUtils.isEmpty(user_password)) {
+            new_password.setError("Please Enter Password");
+            new_password.requestFocus();
+        } else if (TextUtils.isEmpty(user_confirm_password)) {
+            new_password_confirm.setError("Please Confirm Password");
+            new_password_confirm.requestFocus();
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean passwordValidate(String user_password, String user_confirm_password) {
+        if (!(user_password.equals(user_confirm_password))) {
+            new_password_confirm.setError("Passwords Not Matched");
+            new_password_confirm.requestFocus();
+            return false;
+        }
+        return true;
     }
 
     private void saveDetails() {

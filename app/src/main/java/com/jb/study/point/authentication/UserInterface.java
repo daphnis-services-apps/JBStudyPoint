@@ -64,4 +64,13 @@ public interface UserInterface {
             @Part("email") RequestBody emailUpdate,
             @Part("payment_history") RequestBody paymentHistory,
             @Part("payment_amount") RequestBody paymentAmount);
+
+    @Headers("Accept: application/json")
+    @POST("updateUser")
+    @Multipart
+    Call<String> getUserPasswordUpdate(
+            @Part("email") RequestBody email,
+            @Part("old_password") RequestBody oldPassword,
+            @Part("new_password") RequestBody newPassword);
+
 }
