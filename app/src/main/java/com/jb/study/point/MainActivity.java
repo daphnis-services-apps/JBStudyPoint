@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         practice_history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "playlist").putExtra("playlist", "PLNosGDY8Dh1TqPZwqQjWrGDJ-UYPIHznv"));
+                startActivity(new Intent(MainActivity.this, YoutubePlayerActivity.class).putExtra("type", "playlist").putExtra("playlist", "PLNosGDY8Dh1SWbnEf4qNW12ksBmO4ugxV"));
             }
         });
 

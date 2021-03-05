@@ -295,6 +295,7 @@
                 android:text="@string/terms_amp_conditions"
                 android:textSize="12sp"
                 android:textColor="#FF8C00" />
+
         </LinearLayout>
 
         <ProgressBar

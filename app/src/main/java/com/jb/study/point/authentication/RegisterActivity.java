@@ -3,12 +3,14 @@ package com.jb.study.point.authentication;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,6 +23,8 @@ import androidx.core.content.ContextCompat;
 import com.jb.study.point.MainActivity;
 import com.jb.study.point.R;
 import com.jb.study.point.helper.SessionManager;
+
+import net.khirr.android.privacypolicy.PrivacyPolicyDialog;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -36,11 +40,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RegisterActivity extends AppCompatActivity {
-    private TextView login_button;
+    private TextView login_button , privacy_policy;
     private EditText email, password, confirm_password, name;
     private Button register;
     private SessionManager session;
     private AlertDialog progressDialog;
+    private PrivacyPolicyDialog dialog;
+    private String user_email, user_password, user_confirm_password, user_name;
+    private boolean validate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +61,18 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Session manager
         session = new SessionManager(this);
+        dialog = new PrivacyPolicyDialog(this,"https://www.jbstudyapi.techvkt.com/terms-and-conditions","https://www.jbstudyapi.techvkt.com/privacy-policy");
 
         register.setOnClickListener(v -> {
 
-            String user_email = email.getText().toString();
-            String user_password = password.getText().toString();
-            String user_confirm_password = confirm_password.getText().toString();
-            String user_name = name.getText().toString();
+            user_email = email.getText().toString();
+            user_password = password.getText().toString();
+            user_confirm_password = confirm_password.getText().toString();
+            user_name = name.getText().toString();
 
             if (editTextValidation(user_email, user_password, user_confirm_password) && emailValidate(user_email) && passwordValidate(user_password, user_confirm_password)) {
-                registerUser(user_name, user_email, user_password);
+                validate = true;
+                dialog.show();
             }
 
         });
@@ -72,6 +81,42 @@ public class RegisterActivity extends AppCompatActivity {
             Intent register_to_login_intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(register_to_login_intent);
             finish();
+        });
+
+        privacy_policy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validate = false;
+                dialog.show();
+            }
+        });
+
+        dialog.addPoliceLine("This application requires Internet Access and must collect the following information: Device Storage, Unique Installation Id, Version of the Application, Time Zone and Information about the language of the device.");
+        dialog.addPoliceLine("This application sends error reports, installation and send it to a server of the Fabric.io company to analyze and process it.");
+        dialog.addPoliceLine("This application uses a YouTube Data API for getting content videos from Youtube Server.");
+        dialog.addPoliceLine("All details about the use of data are available in our Privacy Policies, as well as all Terms of Service links below.");
+
+        //  Customizing (Optional)
+        dialog.setTitleTextColor(Color.parseColor("#222222"));
+        dialog.setAcceptButtonColor(ContextCompat.getColor(this, R.color.pink));
+
+        //  Title
+        dialog.setTitle("Terms of Service & Privacy Policy");
+
+        dialog.setOnClickListener(new PrivacyPolicyDialog.OnClickListener() {
+            @Override
+            public void onAccept(boolean b) {
+                if (validate) {
+                    registerUser(user_name, user_email, user_password);
+                } else{
+                    Toast.makeText(RegisterActivity.this, "Policy Accepted", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(RegisterActivity.this, "Please Accept Terms of Services & Privacy Policy", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -136,6 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         confirm_password = findViewById(R.id.confirm_password);
+        privacy_policy = findViewById(R.id.privacy_policy_text);
     }
 
     private void registerUser(String name, String user_email, String user_password) {
