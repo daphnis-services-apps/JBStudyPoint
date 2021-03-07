@@ -2,9 +2,12 @@
   <dictionary name="akash">
     <words>
       <w>autofill</w>
+      <w>baseurl</w>
+      <w>getuser</w>
       <w>logins</w>
       <w>lucida</w>
       <w>signin</w>
+      <w>uname</w>
     </words>
   </dictionary>
 </component>

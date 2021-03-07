@@ -52,7 +52,7 @@ public class PaymentActivity extends AppCompatActivity {
     final int UPI_PAYMENT = 0;
 
     private Button get_subscription, send_receipt;
-    private ImageView back, status_icon;
+    private ImageView status_icon;
     private CircleImageView user_profile;
     private TextView user_name, subscription_status;
     private AlertDialog progressDialog;
@@ -211,7 +211,6 @@ public class PaymentActivity extends AppCompatActivity {
     private void initViews() {
         get_subscription = findViewById(R.id.get_subscription);
         send_receipt = findViewById(R.id.send_receipt);
-        back = findViewById(R.id.back_payment_button);
         user_name = findViewById(R.id.user_name);
         user_profile = findViewById(R.id.user_photo);
         subscription_status = findViewById(R.id.subscription_status);
@@ -223,14 +222,15 @@ public class PaymentActivity extends AppCompatActivity {
         dialog = new Dialog(this);
     }
 
-    void payUsingUpi(String amount, String upiId, String name, String note) {
+    @SuppressLint("QueryPermissionsNeeded")
+    void payUsingUpi(String amount) {
 
         Uri uri = Uri.parse("upi://pay").buildUpon()
-                .appendQueryParameter("pa", upiId)
-                .appendQueryParameter("pn", name)
+                .appendQueryParameter("pa", "8755475312@okbizaxis")
+                .appendQueryParameter("pn", "JB STUDY POINT")
                 .appendQueryParameter("mc", "")
                 .appendQueryParameter("tr", "1458527441954")
-                .appendQueryParameter("tn", note)
+                .appendQueryParameter("tn", "JB Study Point Subscription")
                 .appendQueryParameter("am", amount)
                 .appendQueryParameter("cu", "INR")
                 .build();
@@ -349,6 +349,7 @@ public class PaymentActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void getSubscription() {
         dialog.setContentView(R.layout.activity_subscription_pager);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -366,43 +367,28 @@ public class PaymentActivity extends AppCompatActivity {
             days90Renew.setVisibility(View.VISIBLE);
         }
 
-        days30.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void onClick(View v) {
-                days30.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
-                days90.setBackground(getResources().getDrawable(R.drawable.button_white));
-                setAmount = "1500";
-            }
+        days30.setOnClickListener(v -> {
+            days30.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
+            days90.setBackground(getResources().getDrawable(R.drawable.button_white));
+            setAmount = "1500";
         });
 
-        days90.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void onClick(View v) {
-                days90.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
-                days30.setBackground(getResources().getDrawable(R.drawable.button_white));
-                setAmount = "3000";
-            }
+        days90.setOnClickListener(v -> {
+            days90.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
+            days30.setBackground(getResources().getDrawable(R.drawable.button_white));
+            setAmount = "3000";
         });
 
-        days90Renew.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void onClick(View v) {
-                days90Renew.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
-                setAmount = "1500";
-            }
+        days90Renew.setOnClickListener(v -> {
+            days90Renew.setBackground(getResources().getDrawable(R.drawable.button_white_selected));
+            setAmount = "1500";
         });
 
-        getSubscription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (setAmount.equals("0"))
-                    Toast.makeText(PaymentActivity.this, "Please choose one of the Package", Toast.LENGTH_SHORT).show();
-                else
-                    payUsingUpi(setAmount, "8755475312@okbizaxis", "JB STUDY POINT", "JB Study Point Subscription");
-            }
+        getSubscription.setOnClickListener(v -> {
+            if (setAmount.equals("0"))
+                Toast.makeText(PaymentActivity.this, "Please choose one of the Package", Toast.LENGTH_SHORT).show();
+            else
+                payUsingUpi(setAmount);
         });
     }
 

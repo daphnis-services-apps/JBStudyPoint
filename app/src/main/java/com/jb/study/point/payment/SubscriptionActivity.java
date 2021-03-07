@@ -41,20 +41,12 @@ public class SubscriptionActivity extends AppCompatActivity {
 
         settingsValues();
 
-        renew_subscription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SubscriptionActivity.this, PaymentActivity.class));
-                finish();
-            }
+        renew_subscription.setOnClickListener(v -> {
+            startActivity(new Intent(SubscriptionActivity.this, PaymentActivity.class));
+            finish();
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        back.setOnClickListener(v -> finish());
     }
 
     private void settingsValues() {
