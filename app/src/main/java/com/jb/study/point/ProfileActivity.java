@@ -2,6 +2,7 @@ package com.jb.study.point;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -34,6 +35,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.jb.study.point.authentication.UserInterface;
 import com.jb.study.point.payment.PaymentActivity;
 
@@ -195,10 +197,16 @@ public class ProfileActivity extends AppCompatActivity {
                 finish();
                 break;
 
-            case R.id.edit_profile_pic:
-                Intent imageChooserIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            case R.id.profileButton:
+                /*Intent imageChooserIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 imageChooserIntent.setType("image/*");
-                startActivityForResult(imageChooserIntent, SELECT_IMAGE);
+                startActivityForResult(imageChooserIntent, SELECT_IMAGE);*/
+                ImagePicker.Companion
+                        .with(this)
+                        .crop()
+                        .compress(1024)
+                        .maxResultSize(1080,1080)
+                        .start();
                 break;
 
             case R.id.name_edit_button:
@@ -465,19 +473,16 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent returnedIntent) {
         super.onActivityResult(requestCode, resultCode, returnedIntent);
 
-        // Request is image selection
-        if (requestCode == SELECT_IMAGE) {
-            if (resultCode == RESULT_OK) {
-                // Retrieve selected image
-                Uri selectedImage = returnedIntent.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                filepath = cursor.getString(columnIndex);
-                profile_pic.setImageURI(selectedImage);
+        if (resultCode == Activity.RESULT_OK && requestCode == ImagePicker.REQUEST_CODE) {
+            //Image Uri will not be null for RESULT_OK
+            Uri fileUri = returnedIntent.getData();
+            filepath = ImagePicker.Companion.getFilePath(returnedIntent);
+            profile_pic.setImageURI(fileUri);
 
-            }
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(this, ImagePicker.Companion.getError(returnedIntent), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
     }
 

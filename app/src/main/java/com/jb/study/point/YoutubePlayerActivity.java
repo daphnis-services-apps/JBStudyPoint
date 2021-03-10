@@ -56,33 +56,18 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
     private RecyclerView recyclerView;
     private YouTubePlayer youTubePlaye;
     private YouTubePlayerView youTubePlayerView;
-    private AlphaInAnimationAdapter alphaAdapter;
-    private ScaleInAnimationAdapter scaleAdapter;
     private String nextToken;
     private ProgressBar progressBar;
+    private float second;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_player);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View view = getWindow().getDecorView();
-            int flags = view.getSystemUiVisibility();
-            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            view.setSystemUiVisibility(flags);
-            this.getWindow().setStatusBarColor(Color.WHITE);
-        }
-
         initViews();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        //recyclerView.setItemAnimator(new FadeInAnimator());
-        //alphaAdapter = new AlphaInAnimationAdapter(searchAdapter);
-        //playlistAdapter = new PlaylistAdapter(this, playlistVideoList, this, recyclerView);
-        //alphaAdapter = new AlphaInAnimationAdapter(playlistAdapter);
-        //scaleAdapter = new ScaleInAnimationAdapter(alphaAdapter);
-        //recyclerView.setAdapter(scaleAdapter);
 
         if (getIntent().getStringExtra("type").equals("search"))
             if (getIntent().getStringExtra("section").equals("all"))
@@ -115,7 +100,7 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
         });
 
         getLifecycle().addObserver(youTubePlayerView);
-        initPictureInPicture(youTubePlayerView);
+        //initPictureInPicture(youTubePlayerView);
         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
@@ -128,6 +113,14 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
             }
+
+            @Override
+            public void onCurrentSecond(@NotNull YouTubePlayer youTubePlayer, float second) {
+                super.onCurrentSecond(youTubePlayer, second);
+                YoutubePlayerActivity.this.second = second;
+            }
+
+
         });
 
     }
@@ -300,21 +293,20 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
 
 
     private void addFullScreenListenerToPlayer() {
+        addCustomActionsToPlayer();
         youTubePlayerView.addFullScreenListener(new YouTubePlayerFullScreenListener() {
             @Override
             public void onYouTubePlayerEnterFullScreen() {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 fullScreenHelper.enterFullScreen();
-
-                addCustomActionsToPlayer();
+                hideUi();
             }
 
             @Override
             public void onYouTubePlayerExitFullScreen() {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 fullScreenHelper.exitFullScreen();
-
-                removeCustomActionsFromPlayer();
+                hideUi();
             }
         });
     }
@@ -324,7 +316,8 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
         if (youTubePlayerView.isFullScreen()) {
             youTubePlayerView.exitFullScreen();
         } else {
-            getPIP();
+            //getPIP();
+            finish();
         }
     }
 
@@ -334,16 +327,9 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
         assert customAction1Icon != null;
         assert customAction2Icon != null;
 
-        youTubePlayerView.getPlayerUiController().setCustomAction1(customAction1Icon, view ->
-                Toast.makeText(this, "custom action1 clicked", Toast.LENGTH_SHORT).show());
+        youTubePlayerView.getPlayerUiController().setCustomAction1(customAction1Icon, view -> youTubePlaye.seekTo(second-5));
 
-        youTubePlayerView.getPlayerUiController().setCustomAction2(customAction2Icon, view ->
-                Toast.makeText(this, "custom action1 clicked", Toast.LENGTH_SHORT).show());
-    }
-
-    private void removeCustomActionsFromPlayer() {
-        youTubePlayerView.getPlayerUiController().showCustomAction1(false);
-        youTubePlayerView.getPlayerUiController().showCustomAction2(false);
+        youTubePlayerView.getPlayerUiController().setCustomAction2(customAction2Icon, view -> youTubePlaye.seekTo(second + 5));
     }
 
     @Override
@@ -352,10 +338,8 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
 
         if (isInPictureInPictureMode) {
             youTubePlayerView.enterFullScreen();
-            youTubePlayerView.getPlayerUiController().showUi(false);
         } else {
             youTubePlayerView.exitFullScreen();
-            youTubePlayerView.getPlayerUiController().showUi(true);
         }
     }
 
@@ -373,6 +357,25 @@ public class YoutubePlayerActivity extends AppCompatActivity implements Recycler
                     youTubePlaye, getLifecycle(),
                     searchYtVideo.getId().getVideoId(), 0f
             );
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideUi();
+    }
+
+
+    private void hideUi() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View view = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            view.setSystemUiVisibility(uiOptions);
+            /*int flags = view.getSystemUiVisibility();
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            view.setSystemUiVisibility(flags);
+            this.getWindow().setStatusBarColor(Color.WHITE);*/
         }
     }
 }
